@@ -20,7 +20,7 @@ export default function QRGen () {
             const formData = new FormData()
             formData.append("url", Url)
 
-            const response = await fetch("https://linksnap-qr.onrender.com", {
+            const response = await fetch("https://linksnap-qr.onrender.com/QRGen", {
                 method: "POST", 
                 body: formData
             })
