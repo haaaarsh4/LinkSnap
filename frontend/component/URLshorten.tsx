@@ -77,7 +77,7 @@ export default function URLshorten () {
                 <div className="mt-4 p-4 bg-green-100 rounded-lg">
                     <p className="text-sm font-semibold text-gray-700 mb-2">Shortened URL:</p>
                     <Link 
-                        href={`https://linksnapp.vercel.app//${shortCode}`} 
+                        href={`https://linksnapp.vercel.app/${shortCode}`} 
                         target="_blank" 
                         className="text-blue-600 font-mono hover:underline">
                             https://linksnapp.vercel.app/{shortCode}
