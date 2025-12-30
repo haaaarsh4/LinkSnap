@@ -19,7 +19,7 @@ export default function URLshorten () {
             const formData = new FormData()
             formData.append("url", longUrl)
 
-            const response = await fetch("http://localhost:8000/shorten", {
+            const response = await fetch("https://linksnap-shortener.onrender.com/shorten", {
                 method: "POST", 
                 body: formData
             })
@@ -77,10 +77,10 @@ export default function URLshorten () {
                 <div className="mt-4 p-4 bg-green-100 rounded-lg">
                     <p className="text-sm font-semibold text-gray-700 mb-2">Shortened URL:</p>
                     <Link 
-                        href={`http://localhost:8000/${shortCode}`} 
+                        href={`https://linksnapp.vercel.app//${shortCode}`} 
                         target="_blank" 
                         className="text-blue-600 font-mono hover:underline">
-                            http://localhost:8000/{shortCode}
+                            https://linksnapp.vercel.app/{shortCode}
                     </Link>
                 </div>
             )}
