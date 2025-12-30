@@ -31,8 +31,7 @@ export default function Home() {
       <div className="text-white px-4 sm:px-8 md:px-12 lg:px-24 py-8">
         <div className="bg-slate-700/50 border-l-4 border-indigo-500 rounded-lg p-4 sm:p-6">
           <p className="text-sm sm:text-base leading-relaxed">
-            <strong className="text-indigo-300">Note:</strong> The Shorten a Link component will create a short code for your link, append it to the deployed URL, and generate a new shortened link. Clicking the shortened link will redirect you to the original URL. On a free Vercel domain the URL may still be a bit long, but running it locally with your own domain will give cleaner results.
-          </p>
+            <strong className="text-indigo-300">Note:</strong> The Shorten a Link component will create a short code for your link, append it to the deployed backend URL, and generate a new shortened link. Clicking the shortened link will redirect you to the original URL. Because the backend is hosted on Render’s free domain, the link may appear longer than usual. Cloning the project and using a custom domain would make it much cleaner.          </p>
         </div>
       </div>
     </div>
