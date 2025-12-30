@@ -1,4 +1,5 @@
 from io import BytesIO
+import os
 from aiohttp import web
 import aiohttp_cors
 import qrcode
@@ -36,4 +37,5 @@ if __name__ == "__main__":
     for route in list(app.router.routes()):
         cors.add(route)
 
-    web.run_app(app, host="127.0.0.1", port=8001)
+    port = int(os.environ.get("PORT", 10000))
+    web.run_app(app, host="0.0.0.0", port=port)

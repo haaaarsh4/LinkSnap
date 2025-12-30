@@ -4,6 +4,7 @@ import sqlite3
 import validators
 import string
 import random
+import os
 
 routes = web.RouteTableDef()
 
@@ -71,8 +72,5 @@ if __name__ == "__main__":
     for route in list(app.router.routes()):
         cors.add(route)
 
-    print("Starting server on http://0.0.0.0:8000")
-    web.run_app(app, host="0.0.0.0", port=8000)
-    # web.run_app(app,host="127.0.0.1",port=8000)
-
-
+    port = int(os.environ.get("PORT", 10000))
+    web.run_app(app, host="0.0.0.0", port=port)
