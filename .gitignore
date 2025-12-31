@@ -1,0 +1,5 @@
+.env
+urlshorten.db
+urlshortner/
+__pycache__/
+*.pyc
