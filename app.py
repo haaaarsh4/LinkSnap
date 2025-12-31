@@ -21,7 +21,6 @@ rate_limit_storage = defaultdict(list)
 RATE_LIMIT = 10  # requests
 RATE_WINDOW = 60  # seconds
 
-# Rate limiting middleware
 @web.middleware
 async def rate_limit_middleware(request, handler):
     client_ip = request.remote
@@ -47,7 +46,6 @@ async def validate_long_url_format(longurl: str):
     if not response:
         return False
     
-    # Sanitize input
     parsed = urlparse(longurl)
     if parsed.scheme not in ['http', 'https']:
         return False
@@ -75,13 +73,22 @@ async def shorten(request):
     data = await request.post()
     longurl = data["url"]
     if await validate_long_url_format(longurl) and await validate_url(longurl):
+        existing = cursor.execute("SELECT code FROM URLSHORTNER WHERE longurl = ?", (longurl,)).fetchone()
+        if existing:
+            code = existing[0]
+            print(f"Returning existing code: {code}")
+            return web.Response(text=code)
+        
         code = generate_code()
         try:
             cursor.execute(f"INSERT INTO URLSHORTNER (longurl, code) VALUES (?, ?)", (longurl, code,))
             connection.commit()
             
-            redis = request.app['redis']
-            await redis.setex(f"url:{code}", 3600, longurl)
+            try:
+                redis = request.app['redis']
+                await redis.setex(f"url:{code}", 3600, longurl)
+            except Exception as e:
+                print(f"Redis cache error: {e}")
             
         except Exception as ex:
             print(ex)
@@ -92,16 +99,23 @@ async def shorten(request):
 async def redirect_to_logurl(request):
     code = request.match_info["code"]
     
-    redis = request.app['redis']
-    cached = await redis.get(f"url:{code}")
-    if cached:
-        return web.HTTPFound(cached)
+    try:
+        redis = request.app['redis']
+        cached = await redis.get(f"url:{code}")
+        if cached:
+            return web.HTTPFound(cached)
+    except Exception as e:
+        print(f"Redis error: {e}")
     
     row = cursor.execute("SELECT longurl FROM URLSHORTNER WHERE CODE = ?", (code,)).fetchone()
     if not row:
         return web.Response(status=404, text="URL not found")
     
-    await redis.setex(f"url:{code}", 3600, row[0])
+    try:
+        redis = request.app['redis']
+        await redis.setex(f"url:{code}", 3600, row[0])
+    except Exception as e:
+        print(f"Redis cache error: {e}")
     
     return web.HTTPFound(row[0])
 
@@ -127,11 +141,17 @@ if __name__ == "__main__":
         cors.add(route)
 
     async def init_redis(app):
-        redis_url = os.getenv('REDIS_URL', 'redis://localhost')
-        app['redis'] = aioredis.from_url(redis_url, decode_responses=True)
+        try:
+            redis_url = os.getenv('REDIS_URL', 'redis://localhost')
+            app['redis'] = aioredis.from_url(redis_url, decode_responses=True)
+            print(f"Redis connected successfully")
+        except Exception as e:
+            print(f"Redis connection failed: {e}")
+            app['redis'] = None
     
     async def close_redis(app):
-        await app['redis'].close()
+        if app['redis']:
+            await app['redis'].close()
     
     app.on_startup.append(init_redis)
     app.on_cleanup.append(close_redis)
