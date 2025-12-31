@@ -1,6 +1,5 @@
 aiohttp
 aiohttp-cors
-aiohttp-middlewares
 validators
-aioredis
+redis
 python-dotenv
